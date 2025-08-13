@@ -118,6 +118,62 @@ const workspaceControllers = {
                 message: `An internal server error ocurred: ${error.message}`,
             });
         }
+    },
+    renameWorkspace: async (req, res) => {
+        try {
+            const { newName } = req.body;
+            const workspaceID = Number(req.params.id);
+
+            if (!newName) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: 'Workspace name cannot be empty.',
+                });
+            }
+
+            const workspace = await req.prisma.workspace.findUnique({
+                where: { id: workspaceID }
+            });
+
+            if (!workspace) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: 'Workspace not found.',
+                });
+            };
+
+            if (newName === workspace.name) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "The submitted workspace name is the same as the current one.",
+                });
+            };
+
+            await req.prisma.workspace.update({
+                where: {
+                    id: workspaceID,
+                },
+                data: {
+                    name: newName,
+                },
+            });
+
+            res.status(200).json({
+                status: 200,
+                ok: true,
+                message: 'Workspace name changed successfully.',
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: `An internal server error ocurred: ${error.message}`,
+            });
+        }
     }
 }
 

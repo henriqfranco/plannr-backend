@@ -6,6 +6,7 @@ import { config } from './config/config.js';
 
 import routes from './routes/authRoutes.js';
 import workspaceRoutes from './routes/workspaceRoutes.js';
+import bucketRoutes from './routes/bucketRoutes.js';
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.get('/', (req, res) => {
 
 app.use(routes);
 app.use(workspaceRoutes);
+app.use(bucketRoutes);
 
 app.listen(config.server.port, config.server.host, () => {
     console.log(`Server running at: http://${config.server.host}:${config.server.port}`);

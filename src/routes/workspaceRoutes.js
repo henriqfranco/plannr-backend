@@ -10,4 +10,6 @@ workspaceRoutes.post('/workspaces/create', authMiddlewares.authenticateToken, wo
 
 workspaceRoutes.delete('/workspaces/delete/:id', authMiddlewares.authenticateToken, workspaceControllers.deleteWorkspace);
 
+workspaceRoutes.put('/workspaces/update/:id', authMiddlewares.authenticateToken, workspaceControllers.renameWorkspace)
+
 export default workspaceRoutes;
