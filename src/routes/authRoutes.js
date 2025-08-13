@@ -4,10 +4,6 @@ import authMiddlewares from "../middlewares/authMiddlewares.js";
 
 const routes = Router();
 
-routes.get('/', (req, res) => {
-    res.status(200).json({ message: "Plannr backend system." })
-});
-
 routes.post('/auth/register', authMiddlewares.validateRegister, authControllers.createUser);
 routes.post('/auth/login', authControllers.login);
 
