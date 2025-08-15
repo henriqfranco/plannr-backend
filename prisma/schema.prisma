@@ -16,13 +16,14 @@ model User {
   updatedAt DateTime @updatedAt
 
   workspaces Workspace[]
+  Task       Task[]
 }
 
 model Workspace {
-  id Int @id @default(autoincrement())
-  name String
-  userId Int
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(30)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -30,10 +31,80 @@ model Workspace {
 }
 
 model Bucket {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(30)
   workspaceId Int
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tasks Task[]
+}
+
+model Task {
+  id        Int     @id @default(autoincrement())
+  title     String  @db.VarChar(30)
+  completed Boolean
+  notes     String  @db.VarChar(200)
+
+  startDate DateTime?
+  dueDate   DateTime?
+
+  bucketId Int
+  bucket   Bucket @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  userId   Int
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  TaskProgress   TaskProgress? @relation(fields: [taskProgressId], references: [id])
+  taskProgressId Int?
+  TaskPriority   TaskPriority? @relation(fields: [taskPriorityId], references: [id])
+  taskPriorityId Int?
+  TaskRepeat     TaskRepeat?   @relation(fields: [taskRepeatId], references: [id])
+  taskRepeatId   Int?
+}
+
+model TaskProgress {
+  id     Int            @id @default(autoincrement())
+  status ProgressStatus @default(NOT_STARTED)
+
+  tasks Task[]
+}
+
+model TaskPriority {
+  id       Int      @id @default(autoincrement())
+  priority Priotiry @default(MEDIUM)
+
+  tasks Task[]
+}
+
+model TaskRepeat {
+  id     Int    @id @default(autoincrement())
+  repeat Repeat @default(DOES_NOT_REPEAT)
+
+  tasks Task[]
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Priotiry {
+  LOW
+  MEDIUM
+  IMPORTANT
+  URGENT
+}
+
+enum Repeat {
+  DOES_NOT_REPEAT
+  DAILY
+  WEEKDAYS
+  WEEKLY
+  MONTHLY
+  YEARLY
 }
