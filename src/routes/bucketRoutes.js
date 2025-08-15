@@ -8,4 +8,8 @@ bucketRoutes.get('/buckets/:id', authMiddlewares.authenticateToken, bucketContro
 
 bucketRoutes.post('/buckets/create/:id', authMiddlewares.authenticateToken, bucketControllers.createBucket);
 
+bucketRoutes.delete('/buckets/delete/:id', authMiddlewares.authenticateToken, bucketControllers.deleteBucket);
+
+bucketRoutes.put('/buckets/updateName/:id', authMiddlewares.authenticateToken, bucketControllers.renameBucket);
+
 export default bucketRoutes;

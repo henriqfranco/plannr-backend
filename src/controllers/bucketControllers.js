@@ -107,7 +107,7 @@ const bucketControllers = {
             res.status(200).json({
                 status: 200,
                 ok: true,
-                message: 'Workspace created successfully.',
+                message: 'Bucket created successfully.',
                 bucket: bucket,
             });
 
@@ -119,102 +119,112 @@ const bucketControllers = {
             });
         }
     },
-    // deleteWorkspace: async (req, res) => {
-    //     try {
-    //         const { id } = req.params;
-    //         const userID = req.user.userId;
+    deleteBucket: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const userID = req.user.userId;
 
-    //         const workspace = await req.prisma.workspace.findFirst({
-    //             where: {
-    //                 id: parseInt(id),
-    //                 userId: userID
-    //             }
-    //         });
+            const bucket = await req.prisma.bucket.findFirst({
+                where: {
+                    id: parseInt(id)
+                },
+                include: {
+                    workspace: true
+                }
+            });
 
-    //         if (!workspace) {
-    //             return res.status(404).json({
-    //                 status: 404,
-    //                 ok: false,
-    //                 message: 'Workspace not found or you do not have permission to delete it.',
-    //             });
-    //         }
+            if (!bucket) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: 'Bucket not found.',
+                });
+            }
 
-    //         await req.prisma.workspace.delete({
-    //             where: {
-    //                 id: parseInt(id)
-    //             }
-    //         });
+            if (bucket.workspace.userId !== userID) {
+                return res.status(403).json({
+                    status: 403,
+                    ok: false,
+                    message: 'You do not have permission to delete this bucket.',
+                });
+            }
 
-    //         res.status(200).json({
-    //             status: 200,
-    //             ok: true,
-    //             message: 'Workspace deleted successfully.',
-    //         });
+            await req.prisma.bucket.delete({
+                where: {
+                    id: parseInt(id)
+                }
+            });
 
-    //     } catch (error) {
-    //         res.status(500).json({
-    //             status: 500,
-    //             ok: false,
-    //             message: `An internal server error ocurred: ${error.message}`,
-    //         });
-    //     }
-    // },
-    // renameWorkspace: async (req, res) => {
-    //     try {
-    //         const { newName } = req.body;
-    //         const workspaceID = Number(req.params.id);
+            res.status(200).json({
+                status: 200,
+                ok: true,
+                message: 'Bucket deleted successfully.',
+            });
 
-    //         if (!newName) {
-    //             return res.status(400).json({
-    //                 status: 400,
-    //                 ok: false,
-    //                 message: 'Workspace name cannot be empty.',
-    //             });
-    //         }
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: `An internal server error ocurred: ${error.message}`,
+            });
+        }
+    },
+    renameBucket: async (req, res) => {
+        try {
+            const { newName } = req.body;
+            const bucketID = Number(req.params.id);
 
-    //         const workspace = await req.prisma.workspace.findUnique({
-    //             where: { id: workspaceID }
-    //         });
+            if (!newName) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: 'Bucket name cannot be empty.',
+                });
+            }
 
-    //         if (!workspace) {
-    //             return res.status(404).json({
-    //                 status: 404,
-    //                 ok: false,
-    //                 message: 'Workspace not found.',
-    //             });
-    //         };
+            const bucket = await req.prisma.bucket.findUnique({
+                where: { id: bucketID }
+            });
 
-    //         if (newName === workspace.name) {
-    //             return res.status(400).json({
-    //                 status: 400,
-    //                 ok: false,
-    //                 message: "The submitted workspace name is the same as the current one.",
-    //             });
-    //         };
+            if (!bucket) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: 'Bucket not found.',
+                });
+            };
 
-    //         await req.prisma.workspace.update({
-    //             where: {
-    //                 id: workspaceID,
-    //             },
-    //             data: {
-    //                 name: newName,
-    //             },
-    //         });
+            if (newName === bucket.name) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "The submitted bucket name is the same as the current one.",
+                });
+            };
 
-    //         res.status(200).json({
-    //             status: 200,
-    //             ok: true,
-    //             message: 'Workspace name changed successfully.',
-    //         });
+            await req.prisma.bucket.update({
+                where: {
+                    id: bucketID,
+                },
+                data: {
+                    name: newName,
+                },
+            });
 
-    //     } catch (error) {
-    //         res.status(500).json({
-    //             status: 500,
-    //             ok: false,
-    //             message: `An internal server error ocurred: ${error.message}`,
-    //         });
-    //     }
-    // }
+            res.status(200).json({
+                status: 200,
+                ok: true,
+                message: 'Bucket name changed successfully.',
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: `An internal server error ocurred: ${error.message}`,
+            });
+        }
+    }
 }
 
 export default bucketControllers;
