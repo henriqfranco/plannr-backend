@@ -44,8 +44,8 @@ model Bucket {
 model Task {
   id        Int     @id @default(autoincrement())
   title     String  @db.VarChar(30)
-  completed Boolean
-  notes     String  @db.VarChar(200)
+  completed Boolean @default(false)
+  notes     String? @db.VarChar(200)
 
   startDate DateTime?
   dueDate   DateTime?
@@ -58,33 +58,9 @@ model Task {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  TaskProgress   TaskProgress? @relation(fields: [taskProgressId], references: [id])
-  taskProgressId Int?
-  TaskPriority   TaskPriority? @relation(fields: [taskPriorityId], references: [id])
-  taskPriorityId Int?
-  TaskRepeat     TaskRepeat?   @relation(fields: [taskRepeatId], references: [id])
-  taskRepeatId   Int?
-}
-
-model TaskProgress {
-  id     Int            @id @default(autoincrement())
-  status ProgressStatus @default(NOT_STARTED)
-
-  tasks Task[]
-}
-
-model TaskPriority {
-  id       Int      @id @default(autoincrement())
-  priority Priotiry @default(MEDIUM)
-
-  tasks Task[]
-}
-
-model TaskRepeat {
-  id     Int    @id @default(autoincrement())
-  repeat Repeat @default(DOES_NOT_REPEAT)
-
-  tasks Task[]
+  status   ProgressStatus @default(IN_PROGRESS)
+  priority Priotiry       @default(MEDIUM)
+  repeat   Repeat         @default(DOES_NOT_REPEAT)
 }
 
 enum ProgressStatus {

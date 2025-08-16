@@ -42,6 +42,14 @@ const workspaceControllers = {
             const { workspaceName } = req.body;
             const userID = req.user.userId;
 
+            if (!workspaceName) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Workspace name cannot be empty.",
+                });
+            }
+
             const checkWorkspaceName = await req.prisma.workspace.findFirst({
                 where: {
                     name: workspaceName,

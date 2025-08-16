@@ -2,7 +2,7 @@ const bucketControllers = {
     getAllBuckets: async (req, res) => {
         try {
             const userID = req.user.userId;
-            const workspaceId = req.params.id;
+            const workspaceId = req.params.workspaceId;
 
             const workspace = await req.prisma.workspace.findFirst({
                 where: {
@@ -57,7 +57,7 @@ const bucketControllers = {
         try {
             const { bucketName } = req.body;
             const userID = req.user.userId;
-            const workspaceId = req.params.id;
+            const workspaceId = req.params.workspaceId;
 
             if (!bucketName) {
                 return res.status(400).json({

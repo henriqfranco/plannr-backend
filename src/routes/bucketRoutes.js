@@ -4,12 +4,12 @@ import authMiddlewares from "../middlewares/authMiddlewares.js";
 
 const bucketRoutes = Router();
 
-bucketRoutes.get('/buckets/:id', authMiddlewares.authenticateToken, bucketControllers.getAllBuckets);
+bucketRoutes.get('/buckets/:workspaceId', authMiddlewares.authenticateToken, bucketControllers.getAllBuckets);
 
-bucketRoutes.post('/buckets/create/:id', authMiddlewares.authenticateToken, bucketControllers.createBucket);
+bucketRoutes.post('/buckets/create/:workspaceId', authMiddlewares.authenticateToken, bucketControllers.createBucket);
 
-bucketRoutes.delete('/buckets/delete/:id', authMiddlewares.authenticateToken, bucketControllers.deleteBucket);
+bucketRoutes.delete('/buckets/delete/:bucketId', authMiddlewares.authenticateToken, bucketControllers.deleteBucket);
 
-bucketRoutes.put('/buckets/updateName/:id', authMiddlewares.authenticateToken, bucketControllers.renameBucket);
+bucketRoutes.put('/buckets/updateName/:workspaceId', authMiddlewares.authenticateToken, bucketControllers.renameBucket);
 
 export default bucketRoutes;

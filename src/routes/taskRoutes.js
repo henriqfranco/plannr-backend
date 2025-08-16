@@ -4,6 +4,12 @@ import authMiddlewares from "../middlewares/authMiddlewares.js";
 
 const taskRoutes = Router();
 
-taskRoutes.get('/tasks/:id', authMiddlewares.authenticateToken, taskControllers.getAllTasks);
+taskRoutes.get('/tasks/:bucketId', authMiddlewares.authenticateToken, taskControllers.getAllTasks);
+
+taskRoutes.post('/tasks/create/:bucketId', authMiddlewares.authenticateToken, taskControllers.createTask);
+
+taskRoutes.delete('/tasks/delete/:taskId', authMiddlewares.authenticateToken, taskControllers.deleteTask);
+
+taskRoutes.put('/tasks/retitle/:taskId', authMiddlewares.authenticateToken, taskControllers.retitleTask);
 
 export default taskRoutes;
