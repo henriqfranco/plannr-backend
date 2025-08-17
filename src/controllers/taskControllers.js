@@ -120,6 +120,7 @@ const taskControllers = {
             const task = await req.prisma.task.create({
                 data: {
                     title: taskTitle,
+                    notes: '',
                     bucketId: parseInt(bucketId),
                     userId: userID
                 }
@@ -267,7 +268,277 @@ const taskControllers = {
                 message: `An internal server error occurred: ${error.message}`,
             });
         }
-    }
+    },
+    toggleCompletion: async (req, res) => {
+        try {
+            const { completionStatus } = req.body;
+            const { taskId } = req.params;
+            const userID = req.user.userId;
+
+            const task = await req.prisma.task.findFirst({
+                where: {
+                    id: parseInt(taskId)
+                },
+                include: {
+                    bucket: {
+                        include: {
+                            workspace: true
+                        }
+                    }
+                }
+            });
+
+            if (!task) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: 'Task not found.',
+                });
+            }
+
+            if (task.bucket.workspace.userId !== userID) {
+                return res.status(403).json({
+                    status: 403,
+                    ok: false,
+                    message: 'You do not have permission to edit this task.',
+                });
+            }
+
+            if (completionStatus === true) {
+                await req.prisma.task.update({
+                    where: {
+                        id: parseInt(taskId),
+                    },
+                    data: {
+                        completed: true,
+                    },
+                });
+            } else {
+                await req.prisma.task.update({
+                    where: {
+                        id: parseInt(taskId),
+                    },
+                    data: {
+                        completed: false,
+                    },
+                });
+            }
+
+            res.status(200).json({
+                status: 200,
+                ok: true,
+                message: 'Task completion updated successfully.',
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: `An internal server error occurred: ${error.message}`,
+            });
+        }
+    },
+    updateStatus: async (req, res) => {
+        try {
+            const { status } = req.body;
+            const { taskId } = req.params;
+            const userID = req.user.userId;
+
+            const validStatuses = ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'];
+            if (!validStatuses.includes(status)) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: 'Invalid task status. Must be one of: NOT_STARTED, IN_PROGRESS, COMPLETED',
+                });
+            }
+
+            const task = await req.prisma.task.findFirst({
+                where: {
+                    id: parseInt(taskId)
+                },
+                include: {
+                    bucket: {
+                        include: {
+                            workspace: true
+                        }
+                    }
+                }
+            });
+
+            if (!task) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: 'Task not found.',
+                });
+            }
+
+            if (task.bucket.workspace.userId !== userID) {
+                return res.status(403).json({
+                    status: 403,
+                    ok: false,
+                    message: 'You do not have permission to edit this task.',
+                });
+            }
+
+            await req.prisma.task.update({
+                where: {
+                    id: parseInt(taskId),
+                },
+                data: {
+                    status: status,
+                },
+            });
+
+            res.status(200).json({
+                status: 200,
+                ok: true,
+                message: 'Task status updated successfully.',
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: `An internal server error occurred: ${error.message}`,
+            });
+        }
+    },
+    updatePriority: async (req, res) => {
+        try {
+            const { priority } = req.body;
+            const { taskId } = req.params;
+            const userID = req.user.userId;
+
+            const validPriorities = ['LOW', 'MEDIUM', 'IMPORTANT', 'URGENT'];
+            if (!validPriorities.includes(priority)) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: 'Invalid task priority. Must be one of: LOW, MEDIUM, IMPORTANT, URGENT',
+                });
+            }
+
+            const task = await req.prisma.task.findFirst({
+                where: {
+                    id: parseInt(taskId)
+                },
+                include: {
+                    bucket: {
+                        include: {
+                            workspace: true
+                        }
+                    }
+                }
+            });
+
+            if (!task) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: 'Task not found.',
+                });
+            }
+
+            if (task.bucket.workspace.userId !== userID) {
+                return res.status(403).json({
+                    status: 403,
+                    ok: false,
+                    message: 'You do not have permission to edit this task.',
+                });
+            }
+
+            await req.prisma.task.update({
+                where: {
+                    id: parseInt(taskId),
+                },
+                data: {
+                    priority: priority,
+                },
+            });
+
+            res.status(200).json({
+                status: 200,
+                ok: true,
+                message: 'Task priority updated successfully.',
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: `An internal server error occurred: ${error.message}`,
+            });
+        }
+    },
+    updateRepeatability: async (req, res) => {
+        try {
+            const { repeatability } = req.body;
+            const { taskId } = req.params;
+            const userID = req.user.userId;
+
+            const validRepeatabilities = ['DOES_NOT_REPEAT', 'DAILY', 'WEEKDAYS', 'WEEKLY', 'MONTHLY', 'YEARLY'];
+            if (!validRepeatabilities.includes(repeatability)) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: 'Invalid task repeatability. Must be one of: DOES_NOT_REPEAT, DAILY, WEEKDAYS, WEEKLY, MONTHLY, YEARLY',
+                });
+            }
+
+            const task = await req.prisma.task.findFirst({
+                where: {
+                    id: parseInt(taskId)
+                },
+                include: {
+                    bucket: {
+                        include: {
+                            workspace: true
+                        }
+                    }
+                }
+            });
+
+            if (!task) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: 'Task not found.',
+                });
+            }
+
+            if (task.bucket.workspace.userId !== userID) {
+                return res.status(403).json({
+                    status: 403,
+                    ok: false,
+                    message: 'You do not have permission to edit this task.',
+                });
+            }
+
+            await req.prisma.task.update({
+                where: {
+                    id: parseInt(taskId),
+                },
+                data: {
+                    repeat: repeatability,
+                },
+            });
+
+            res.status(200).json({
+                status: 200,
+                ok: true,
+                message: 'Task repeatability updated successfully.',
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: `An internal server error occurred: ${error.message}`,
+            });
+        }
+    },
 }
 
 export default taskControllers;
