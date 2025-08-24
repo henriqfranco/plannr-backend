@@ -18,6 +18,29 @@ const workspaceControllers = {
                             name: true,
                             email: true
                         }
+                    },
+                    buckets: {
+                        select: {
+                            id: true,
+                            name: true,
+                            createdAt: true,
+                            updatedAt: true,
+                            tasks: {
+                                select: {
+                                    id: true,
+                                    title: true,
+                                    status: true,
+                                    priority: true,
+                                    completed: true,
+                                    notes: true,
+                                    startDate: true,
+                                    dueDate: true,
+                                    createdAt: true,
+                                    updatedAt: true,
+                                    repeat: true
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -25,7 +48,7 @@ const workspaceControllers = {
             res.status(200).json({
                 status: 200,
                 ok: true,
-                message: 'Displaying user workspaces.',
+                message: 'Displaying user workspaces with buckets and tasks.',
                 workspaces: workspaces
             });
 
@@ -33,7 +56,7 @@ const workspaceControllers = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                message: `An internal server error ocurred: ${error.message}`,
+                message: `An internal server error occurred: ${error.message}`,
             });
         }
     },
@@ -83,7 +106,7 @@ const workspaceControllers = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                message: `An internal server error ocurred: ${error.message}`,
+                message: `An internal server error occurred: ${error.message}`,
             });
         }
     },
@@ -123,7 +146,7 @@ const workspaceControllers = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                message: `An internal server error ocurred: ${error.message}`,
+                message: `An internal server error occurred: ${error.message}`,
             });
         }
     },
@@ -150,7 +173,7 @@ const workspaceControllers = {
                     ok: false,
                     message: 'Workspace not found.',
                 });
-            };
+            }
 
             if (newName === workspace.name) {
                 return res.status(400).json({
@@ -158,7 +181,7 @@ const workspaceControllers = {
                     ok: false,
                     message: "The submitted workspace name is the same as the current one.",
                 });
-            };
+            }
 
             await req.prisma.workspace.update({
                 where: {
@@ -179,7 +202,7 @@ const workspaceControllers = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                message: `An internal server error ocurred: ${error.message}`,
+                message: `An internal server error occurred: ${error.message}`,
             });
         }
     }
